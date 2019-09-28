@@ -1,57 +1,24 @@
-/**
-  ******************************************************************************
-  * @file    main.c
-  * @author  Vladimir Leonidov
-  * @version V1.0.0
-  * @date    06.12.2015
-  * @brief   Лабораторная работа №1 - "Hello World!"
-  *			 Отладочная плата: STM32F10C-EVAL
-  *
-  *			 - Реализовано поочерёдное мигание четырьмя светодиодами
-  *
-  ******************************************************************************
-  */
-
 #include "main.h"
 
-/**
-  * @brief  Основная программа
-  * @param  None
-  * @retval None
-  */
 int main(void)
 {
-	RCC->APB2ENR |= RCC_APB2ENR_IOPDEN;	//включить тактирование GPIOD
+	RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;	//включить тактирование GPIOC
 	
-	GPIOD->CRL = 0;						//очистка регистров конфигурации..
-	GPIOD->CRH = 0;						//..портов ввода/вывода
-	GPIOD->CRL |= GPIO_CRL_MODE4_1;		//LD4, выход 2МГц
-	GPIOD->CRL |= GPIO_CRL_MODE3_1;		//LD3, выход 2МГц
-	GPIOD->CRH |= GPIO_CRH_MODE13_1;	//LD2, выход 2МГц
-	GPIOD->CRL |= GPIO_CRL_MODE7_1;		//LD1, выход 2МГц
+	
+	GPIOC->CRH &= ~GPIO_CRH_MODE8;	//LD2, выход 2МГц
+	GPIOC->CRH &= ~GPIO_CRH_CNF8;	//LD2, выход 2МГц
+	GPIOC->CRH |= GPIO_CRH_MODE8_1;	//LD2, выход 2МГц
 	
 	//Бесконечный цикл
 	while(1) {
-		LED1_ON();						//включить первый светодиод
+		GPIOC->BSRR |= GPIO_BSRR_BS8;
 		delay(DELAY_VAL);				//вызов подпрограммы задержки
-		LED1_OFF();						//выключить первый светодиод
-		LED2_ON();						//включить второй светодиод
-		delay(DELAY_VAL);				//...
-		LED2_OFF();
-		LED3_ON();
-		delay(DELAY_VAL);
-		LED3_OFF();
-		LED4_ON();
-		delay(DELAY_VAL);
-		LED4_OFF();			
+		GPIOC->BSRR |= GPIO_BSRR_BR8;					//выключить первый светодиод	
+				delay(DELAY_VAL);				//вызов подпрограммы задержки
+
 	}
 }
 
-/**
-  * @brief  Подпрограмма задержки
-  * @param  takts - Кол-во тактов
-  * @retval None
-  */
 void delay(uint32_t takts)
 {
 	uint32_t i;
